@@ -1,0 +1,282 @@
+# 💸 Personal Finance Time Machine
+
+A **personal finance web app** that helps users track money, build habits, and simulate their financial future in an interactive way. It is built as a **single-page application** using **HTML, CSS, and vanilla JavaScript** with a clear **MVC-style architecture** inspired by common JavaScript MVC patterns and modern dashboard UX practices. [web:56][web:98]
+
+---
+
+## 🚀 Features
+
+### 1. Core Finance Tracking
+
+- Log **income** and **expenses** with date, category, and description.
+- Automatic KPIs:
+  - Total income
+  - Total expenses
+  - Net balance
+  - Savings rate
+
+This mirrors core functionality found in many personal finance dashboards and expense trackers. [web:52][web:57]
+
+### 2. Finance Copilot (AI-style Insights)
+
+- Analyses your data and explains:
+  - Whether your cash flow is positive or negative.
+  - How strong your savings rate is (good / average / low).
+  - Which category you spend the most on and where you can cut.
+- Runs a simple **trend-based prediction** over recent months of expenses to:
+  - Estimate next month’s expenses.
+  - Generate human-readable suggestions (e.g., “trend is up, plan a buffer”).
+
+This pattern is inspired by AI-driven personal finance products that turn raw numbers into guidance. [web:77][web:89]
+
+### 3. Time Machine Simulator
+
+- Interactive sliders for:
+  - Projection length (months).
+  - Monthly income growth %.
+  - Monthly expense growth %.
+- Simulates future **net worth** over time and renders an **animated line chart** so you can visually see the impact of different behaviors.
+- Uses the HTML `<canvas>` API with `requestAnimationFrame` for smooth animation.
+
+Using canvas-based line charts and slider-driven projections is a common technique in interactive dashboards. [web:75][web:98]
+
+### 4. Goal Planner
+
+- Create financial goals with:
+  - Goal name (e.g., “New laptop”, “Emergency fund”).
+  - Target amount.
+  - Target duration in months.
+- The app compares:
+  - **Required monthly savings** vs **current monthly savings**.
+- Classifies each goal as:
+  - Comfortable
+  - Tight
+  - Unrealistic
+- Provides suggestions such as:
+  - “Trim non-essential categories.”
+  - “Extend timeline or increase income.”
+
+This is similar to goal-based planning flows in modern consumer finance apps. [web:79][web:89]
+
+### 5. Habit & Streak System
+
+- Built-in habits:
+  - “Log today”
+  - “No food delivery”
+  - “Review dashboard”
+- Tracks **streaks per habit** and stores:
+  - Current streak length.
+  - Last completed date.
+- Visually marks today as done and resets streaks when a day is missed.
+- Encourages consistent logging and healthier money behavior using gamification, similar to dedicated habit tracker apps. [web:91][web:101]
+
+### 6. Export & Portability
+
+- One-click **CSV export** of all transactions.
+- CSV opens directly in:
+  - Excel
+  - Google Sheets
+  - Other spreadsheet / BI tools
+- Makes it easy to:
+  - Share data with mentors or accountants.
+  - Back up or migrate data.
+
+Exporting to CSV is a standard feature in personal finance trackers and dashboard tools. [web:79][web:107]
+
+### 7. Mobile‑First Interactive UI
+
+- **Responsive layout** using CSS Grid and media queries:
+  - Two columns on desktop (form + dashboard).
+  - Stacked cards on mobile, with dashboard shown first.
+- UI behaviors:
+  - Card hover glows.
+  - KPI hover highlights.
+  - Table row hover lift.
+  - AI panel soft “breathing” animation.
+  - Animated net-worth chart.
+- On smaller screens:
+  - Layout collapses to a single column.
+  - Less critical table columns are hidden for clarity.
+
+These patterns follow best practices for mobile dashboard UX and responsive finance UIs. [web:98][web:102]
+
+---
+
+## 🏗️ Tech Stack & Architecture
+
+### Tech Stack
+
+- **Frontend**
+  - HTML5
+  - CSS3 (Grid, Flexbox, transitions, keyframe animations)
+  - Vanilla JavaScript (ES6+)
+
+- **Browser APIs**
+  - `localStorage` for persistence.
+  - `<canvas>` 2D context for the simulator chart.
+  - `requestAnimationFrame` for smooth chart animations.
+
+These are commonly used to build interactive dashboards without large frameworks. [web:75][web:98]
+
+### Architecture (MVC-style)
+
+The app follows a **Model–View–Controller (MVC-like)** structure, similar to well-known vanilla JS MVC examples. [web:56][web:62]
+
+- **Model**
+  - Manages core data and business logic:
+    - Transactions (income/expenses).
+    - Summary calculations (income, expenses, net, savings rate).
+    - Monthly aggregates (for trends and simulation).
+    - Habits (streak count and last completed date).
+    - Simple metadata (e.g., last summary for “what changed since last visit”).
+  - Uses `localStorage`:
+    - Keeps the app offline-capable.
+    - Avoids backend complexity for this version.
+
+- **View**
+  - Handles all DOM interaction and rendering:
+    - Transaction form.
+    - KPIs and stats.
+    - AI insight panel.
+    - Habit streak pills.
+    - Time Machine sliders and canvas drawing.
+    - Transactions table.
+  - Responds to model data through exposed render methods.
+
+- **Controller**
+  - Connects user actions to model updates and view refresh:
+    - Form submissions.
+    - Delete buttons in the transaction table.
+    - Simulator slider changes.
+    - Habit pill clicks.
+    - “Refresh AI insights” and “Export CSV” buttons.
+  - Uses a central `refresh()` to keep the UI in sync whenever transactions or habits change.
+
+---
+
+## 🧠 Analytics & “AI-style” Logic
+
+The app uses straightforward logic to mimic AI-like behavior while staying deterministic and explainable:
+
+1. **Summaries**
+   - Aggregates all transactions to compute:
+     - Total income.
+     - Total expenses.
+     - Net balance.
+     - Savings rate (net / income).
+
+2. **Trend-based Prediction**
+   - Groups expenses by month.
+   - Uses a simple **linear trend** over the last few months:
+     - Calculates slope and intercept.
+     - Predicts next-month expense.
+   - Clamps negative predictions to zero and uses the predicted value to:
+     - Generate “trend up/down” commentary.
+     - Suggest creating buffers or keeping habits.
+
+3. **AI-style Text Insights**
+   - Maps numeric metrics to human-friendly sentences, for example:
+     - Savings rate > 30% → “excellent”.
+     - Savings rate 10–30% → “good but improvable”.
+     - Savings rate < 10% → “needs attention”.
+   - Identifies top spending category and suggests trimming it.
+   - Shows “since last visit” changes based on stored previous summary.
+
+4. **Habits**
+   - For each habit:
+     - Checks last completion date.
+     - If completed today: keep streak.
+     - If completed yesterday: streak++.
+     - Otherwise: streak resets to 1 on new completion.
+   - Reflects current streaks in the UI with simple icons and colors.
+
+These approaches are inspired by how AI-augmented finance tools and habit trackers provide insights and gamification. [web:77][web:89][web:91]
+
+---
+
+## 📁 Project Structure
+
+A typical structure for this project:
+
+
+There is **no build step**: it’s a pure static front-end app.
+
+---
+
+## 🏃‍♂️ Getting Started
+
+### 1. Clone the repository
+
+
+### 2. Run locally
+
+- Option A: Open `index.html` directly in a browser (for a quick test).
+- Option B: Use VS Code + Live Server (recommended for dev workflow).
+
+### 3. Use the app
+
+1. Add some income and expense transactions.
+2. Check the KPIs for net balance and savings rate.
+3. Click **“Refresh AI Insights”** to see:
+   - Cash flow status.
+   - Savings rate assessment.
+   - Top spending category.
+   - Next-month expense estimate.
+4. Use the **Time Machine** sliders to simulate different growth scenarios.
+5. Define a goal in the **Goal Planner** and see if it’s comfortable, tight, or unrealistic.
+6. Use the **habit pills** (“Log today”, etc.) and keep streaks alive.
+7. Export your transactions with the **CSV export** button.
+
+---
+
+## 🧩 Possible Extensions (Roadmap)
+
+This project is intentionally designed as a strong foundation for a future SaaS:
+
+- **Authentication & Cloud Sync**
+  - Add email/password or social login.
+  - Sync data across devices using a backend such as Supabase or Firebase. [web:118][web:119]
+
+- **Multi-Persona Presets**
+  - Student, teacher, and business profiles with:
+    - Different default categories.
+    - Different default goals and habits. [web:79][web:89]
+
+- **Recurring Bills & Reminders**
+  - Mark transactions as recurring (monthly/quarterly/yearly).
+  - Show upcoming fixed costs for better planning. [web:77][web:79]
+
+- **Tax & Business Reports**
+  - Additional views for:
+    - Quarterly income/expense breakdown.
+    - Basic tax-reserve suggestions. [web:79][web:83]
+
+- **Backend-based SaaS**
+  - Add user accounts, workspaces, and subscription plans using a SaaS backend template. [web:115][web:124]
+
+---
+
+## 🎯 Why This Project (Interview Angle)
+
+This project demonstrates:
+
+- **Front-end engineering skills**
+  - Clean architecture in vanilla JS (MVC).
+  - Advanced DOM manipulation, canvas animations, and responsive design.
+
+- **Data modeling & analytics**
+  - Summarization, aggregations, and simple time-series trend estimation.
+
+- **UX & product mindset**
+  - Focus on behavior change (habits, streaks).
+  - Actionable insights instead of just static charts.
+  - A clear path to a multi-user SaaS product.
+
+You can position it as a **portfolio project** that sits between a simple CRUD app and a real product-ready tool.
+
+---
+
+## 📄 License
+
+You can customize this section as needed.
+

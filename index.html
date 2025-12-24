@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Personal Finance Dashboard · Time Machine</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app__header">
+      <h1 class="app__title">💸 Personal Finance Time Machine</h1>
+      <p class="app__subtitle">
+        Track today. Simulate tomorrow. Build money habits that stick.
+      </p>
+    </header>
+
+    <main class="app__main">
+      <!-- Left: Form + actions + goals -->
+      <section class="card card--form">
+        <h2>Add Transaction</h2>
+        <form id="transaction-form">
+          <div class="form__row">
+            <label for="type">Type</label>
+            <select id="type" name="type">
+              <option value="income">Income</option>
+              <option value="expense">Expense</option>
+            </select>
+          </div>
+
+          <div class="form__row">
+            <label for="category">Category</label>
+            <select id="category" name="category">
+              <option value="Salary">Salary</option>
+              <option value="Food">Food</option>
+              <option value="Transport">Transport</option>
+              <option value="Shopping">Shopping</option>
+              <option value="Rent">Rent</option>
+              <option value="Utilities">Utilities</option>
+              <option value="Health">Health</option>
+              <option value="Entertainment">Entertainment</option>
+              <option value="Others">Others</option>
+            </select>
+          </div>
+
+          <div class="form__row">
+            <label for="amount">Amount (₹)</label>
+            <input id="amount" name="amount" type="number" min="0" step="0.01" required />
+          </div>
+
+          <div class="form__row">
+            <label for="date">Date</label>
+            <input id="date" name="date" type="date" required />
+          </div>
+
+          <div class="form__row">
+            <label for="description">Description</label>
+            <input id="description" name="description" type="text" placeholder="Optional note" />
+          </div>
+
+          <button type="submit" class="btn btn--primary">Add Transaction</button>
+        </form>
+
+        <hr style="border-color:#1f2937; margin:14px 0;" />
+
+        <h3>Smart Actions</h3>
+        <div style="display:flex; flex-direction:column; gap:8px;">
+          <button id="btn-export" class="btn btn--ghost">📤 Export Report (Excel / CSV)</button>
+          <button id="btn-refresh-insights" class="btn btn--ghost">🤖 Refresh AI Insights</button>
+        </div>
+
+        <hr style="border-color:#1f2937; margin:14px 0;" />
+
+        <h3>Goal Planner</h3>
+        <div class="form__row">
+          <label for="goal-name">Goal name</label>
+          <input id="goal-name" type="text" placeholder="e.g. New laptop" />
+        </div>
+        <div class="form__row">
+          <label for="goal-amount">Goal amount (₹)</label>
+          <input id="goal-amount" type="number" min="0" step="100" />
+        </div>
+        <div class="form__row">
+          <label for="goal-months">Target in (months)</label>
+          <input id="goal-months" type="number" min="1" max="60" value="12" />
+        </div>
+        <button id="btn-evaluate-goal" class="btn btn--ghost">🎯 Evaluate Feasibility</button>
+        <p id="goal-feedback" style="font-size:0.8rem; color:#9ca3af; margin-top:6px;"></p>
+      </section>
+
+      <!-- Right: Dashboard, habits, AI, simulator, table -->
+      <section class="card card--dashboard">
+        <h2>Overview</h2>
+
+        <!-- Habit & streak bar -->
+        <div id="habit-bar" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
+          <div class="habit-pill" data-habit="log_daily">
+            <span class="habit-pill__name">Log today</span>
+            <span class="habit-pill__streak" id="habit-log-daily">0🔥</span>
+          </div>
+          <div class="habit-pill" data-habit="no_food_delivery">
+            <span class="habit-pill__name">No food delivery</span>
+            <span class="habit-pill__streak" id="habit-no-delivery">0🔥</span>
+          </div>
+          <div class="habit-pill" data-habit="review_dashboard">
+            <span class="habit-pill__name">Review dashboard</span>
+            <span class="habit-pill__streak" id="habit-review">0🔥</span>
+          </div>
+        </div>
+
+        <div class="kpis">
+          <div class="kpi">
+            <span class="kpi__label">Total Income</span>
+            <span id="kpi-income" class="kpi__value">₹0.00</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi__label">Total Expense</span>
+            <span id="kpi-expense" class="kpi__value">₹0.00</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi__label">Net Balance</span>
+            <span id="kpi-balance" class="kpi__value">₹0.00</span>
+          </div>
+          <div class="kpi">
+            <span class="kpi__label">Savings Rate</span>
+            <span id="kpi-savings" class="kpi__value">0%</span>
+          </div>
+        </div>
+
+        <h3>Finance Copilot (AI-style Insights)</h3>
+        <div id="ai-panel" style="
+          background: rgba(15,23,42,0.9);
+          border-radius: 10px;
+          border: 1px solid #1f2937;
+          padding: 10px 12px;
+          font-size: 0.83rem;
+          line-height: 1.4;
+          max-height: 170px;
+          overflow-y: auto;
+          margin-bottom: 10px;
+        ">
+          <p style="color:#9ca3af; margin:0;">
+            Add some transactions and click <strong>Refresh AI Insights</strong> to see personalized tips, trend analysis and predictions.
+          </p>
+        </div>
+
+        <h3>Time Machine Simulator</h3>
+        <div class="simulator">
+          <div class="simulator__controls">
+            <div class="form__row">
+              <label for="sim-months">Projection length (months)</label>
+              <input id="sim-months" type="range" min="3" max="24" value="12" />
+              <span class="simulator__value" id="sim-months-value">12</span>
+            </div>
+            <div class="form__row">
+              <label for="sim-income-growth">Income growth per month (%)</label>
+              <input id="sim-income-growth" type="range" min="-10" max="15" value="2" />
+              <span class="simulator__value" id="sim-income-growth-value">2%</span>
+            </div>
+            <div class="form__row">
+              <label for="sim-expense-growth">Expense growth per month (%)</label>
+              <input id="sim-expense-growth" type="range" min="-10" max="15" value="1" />
+              <span class="simulator__value" id="sim-expense-growth-value">1%</span>
+            </div>
+          </div>
+          <div class="simulator__chart">
+            <canvas id="sim-chart" width="400" height="180"></canvas>
+          </div>
+        </div>
+
+        <h3 style="margin-top:14px;">Transactions</h3>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Type</th>
+              <th>Category</th>
+              <th>Description</th>
+              <th class="table__right">Amount (₹)</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="transaction-body">
+            <!-- Rows injected by View -->
+          </tbody>
+        </table>
+      </section>
+    </main>
+
+    <footer class="app__footer">
+      <span>
+        Time Machine · HTML · CSS · JavaScript (MVC) · localStorage · CSV export · simulator · goals · habits & streaks · mobile-first.
+      </span>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
